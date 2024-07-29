@@ -1,0 +1,61 @@
+#!/bin/bash
+clear
+IP=$(curl -s ipv4.icanhazip.com)
+Name=$(curl -sS https://raw.githubusercontent.com/takbebeh/Registrasi/main/ipvip | grep $IP | awk '{print $6}')
+Exp1=$(curl -sS https://raw.githubusercontent.com/takbebeh/Registrasi/main/ipvip | grep $IP | awk '{print $4}')
+codebkp=$(tr </dev/urandom -dc a-z0-9 | head -c5)
+sekarang=$(date -d "0 days" +"%Y-%m-%d")
+HOST="$(cat /etc/xray/domain)"
+DATEVPS=$(date +"%d-%B-%Y")
+ISPVPS=$(cat /etc/xray/isp)
+CITY=$(cat /etc/xray/city)
+d1=$(date -d "$Exp1" +%s)
+d2=$(date -d "$sekarang" +%s)
+MasaAktif=$(((d1 - d2) / 86400))
+infonetele() {
+    KEY=$(grep -E "^#bot# " "/etc/bot/.autobackup.db" | cut -d ' ' -f 2)
+    CHATID=$(grep -E "^#bot# " "/etc/bot/.autobackup.db" | cut -d ' ' -f 3)
+    TIME="10"
+    URL="https://api.telegram.org/bot$KEY/sendMessage"
+    TEXT="
+<b>◇━━━━━━━━━━━━━━━━━◇</b>
+  <b>♻️INFO BACKUP SERVER♻️</b>
+<b>◇━━━━━━━━━━━━━━━━━◇</b>
+<b>💻 IP SERVER:</b> <code>$IP</code>
+<b>☁️ DOMAIN    :</b> <code>$HOST</code>
+<b>⏰ TANGGAL :</b> <code>$DATEVPS</code>
+<b>💡 NAMA ISP:</b> <code>$ISPVPS</code>
+<b>📌 LOKASI      :</b> <code>$CITY</code>
+<b>◇━━━━━━━━━━━━━━━━━◇</b>
+<b>🎁TOKEN:</b> <code>$id</code>
+<b>◇━━━━━━━━━━━━━━━━━◇</b>
+<b>🕰 EXP SC      :</b> <code>$MasaAktif Hari Lagi</code>
+<b>👨🏻‍💻 SUPPORT : @Mass_Alfin</b>
+<b>◇━━━━━━━━━━━━━━━━━◇</b>
+<b>💌 SIMPAN TOKEN DENGAN BAIK GUNAKAN SAAT INGIN RESTORE SERVER ANDA</b>"
+    curl -s --max-time $TIME -d "chat_id=$CHATID&disable_web_page_preview=1&text=$TEXT&parse_mode=html" $URL >/dev/null
+}
+
+mkdir -p /root/backup
+cp -r /etc/xray/config.json backup/ >/dev/null 2>&1
+cp -r /etc/ssh/.ssh.db backup/ >/dev/null 2>&1
+cp -r /etc/log-create-user.log backup/ >/dev/null 2>&1
+cp -r /etc/log-molog-user.log backup/ >/dev/null 2>&1
+cp /etc/passwd backup/
+cp /etc/group backup/
+cp /etc/shadow backup/
+cp /etc/gshadow backup/
+cp -r /etc/ssh/ip backup/ip
+cp -r /etc/vmess backup/vmess
+cp -r /etc/vless backup/vless
+cp -r /etc/trojan backup/trojan
+cp -r /etc/shadowsocks backup/shadowsocks
+cp -r /etc/limit backup/limit
+cp -r /var/www/html/user backup/user
+cd /root
+zip -r Backup-${codebkp}-${IP}-${DATEVPS}.zip backup >/dev/null 2>&1
+rclone copy /root/Backup-${codebkp}-${IP}-${DATEVPS}.zip gd:AutoBackup/
+url=$(rclone link gd:AutoBackup/Backup-${codebkp}-${IP}-${DATEVPS}.zip)
+id=($(echo $url | grep '^https' | cut -d'=' -f2))
+rm -rf *
+infonetele

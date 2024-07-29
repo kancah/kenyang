@@ -1,0 +1,60 @@
+#!/bin/bash
+clear
+IP=$(curl -s ipv4.icanhazip.com)
+Name=$(curl -sS https://raw.githubusercontent.com/takbebeh/Registrasi/main/ipvip | grep $IP | awk '{print $6}')
+Exp1=$(curl -sS https://raw.githubusercontent.com/takbebeh/Registrasi/main/ipvip | grep $IP | awk '{print $4}')
+codebkp=$(tr </dev/urandom -dc a-z0-9 | head -c5)
+sekarang=$(date -d "0 days" +"%Y-%m-%d")
+HOST="$(cat /etc/xray/domain)"
+DATEVPS=$(date +"%d-%B-%Y")
+ISPVPS=$(cat /etc/xray/isp)
+CITY=$(cat /etc/xray/city)
+EMAIL="$(cat /etc/emailbackup.txt)"
+d1=$(date -d "$Exp1" +%s)
+d2=$(date -d "$sekarang" +%s)
+MasaAktif=$(((d1 - d2) / 86400))
+infonegmail() {
+    echo "
+================================
+SUCCESSFULL BACKUP YOUR VPS
+Please Save The Following Data
+================================
+IP     : $IP
+DOMAIN : $HOST
+DATE   : $DATEVPS
+ISP    : $ISPVPS
+CITY   : $CITY
+TOKEN  : $id
+================================
+MASA AKTIF LISENSI : $MasaAktif Hari Lagi
+================================
+© Copyright By https://github.com/takbebeh
+Busines email : admin@alfweb.my.id
+Report bugs   : https://t.me/Mass_Alfin
+Alfvpn Community
+    " | mail -s "Data Backup Server" $EMAIL
+}
+
+mkdir -p /root/backup
+cp -r /etc/xray/config.json backup/ >/dev/null 2>&1
+cp -r /etc/ssh/.ssh.db backup/ >/dev/null 2>&1
+cp -r /etc/log-create-user.log backup/ >/dev/null 2>&1
+cp -r /etc/log-molog-user.log backup/ >/dev/null 2>&1
+cp /etc/passwd backup/
+cp /etc/group backup/
+cp /etc/shadow backup/
+cp /etc/gshadow backup/
+cp -r /etc/ssh/ip backup/ip
+cp -r /etc/vmess backup/vmess
+cp -r /etc/vless backup/vless
+cp -r /etc/trojan backup/trojan
+cp -r /etc/shadowsocks backup/shadowsocks
+cp -r /etc/limit backup/limit
+cp -r /var/www/html/user backup/user
+cd /root
+zip -r Backup-${codebkp}-${IP}-${DATEVPS}.zip backup >/dev/null 2>&1
+rclone copy /root/Backup-${codebkp}-${IP}-${DATEVPS}.zip gd:AutoBackup/
+url=$(rclone link gd:AutoBackup/Backup-${codebkp}-${IP}-${DATEVPS}.zip)
+id=($(echo $url | grep '^https' | cut -d'=' -f2))
+rm -rf *
+infonegmail

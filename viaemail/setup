@@ -1,0 +1,46 @@
+#!/bin/bash
+clear
+# // FONT color configuration | ALFVPN COMUNITY
+Green="\e[92;1m"
+RED="\033[31m"
+YELLOW="\033[33m"
+BLUE="\033[36m"
+NC='\e[0m'
+rm setup
+# // Welcome
+echo -e " ┌─────────────────────────────────────────────────────────┐"
+echo -e "─│                        ${BLUE}WELCOME TO${NC}                       │─"
+echo -e "─│    ${YELLOW}┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐┬─┐┬┌─┐┌┬┐  ┌─┐┬─┐┌─┐┌┬┐┬┬ ┬┌┬┐${NC}    │─"
+echo -e "─│    ${YELLOW}├─┤│ │ │ │ │└─┐│  ├┬┘│├─┘ │   ├─┘├┬┘├┤ │││││ ││││${NC}    │─"
+echo -e "─│    ${YELLOW}┴ ┴└─┘ ┴ └─┘└─┘└─┘┴└─┴┴   ┴   ┴  ┴└─└─┘┴ ┴┴└─┘┴ ┴${NC}    │─"
+echo -e "─│        ${RED}POWERRED BY ALFVPN${NC} | ${Green}TELEGRAM: @Mass_Alfin${NC}       │─"
+echo -e " └─────────────────────────────────────────────────────────┘"
+echo -e " ┌─────────────────────────────────────────────────────────┐"
+echo -e " │   ISILAH EMAIL DIBAWAH INI UNTUK MENYIMPAN INFO TOKEN   │"
+echo -e " │    BACKUP DARI DATA VPS ANDA. DAN GUNAKAN SAAT INGIN    │"
+echo -e " │           MERESTORE VPS ANDA JIKA DIBUTUHKAN.           │"
+echo -e " └─────────────────────────────────────────────────────────┘"
+read -p "  Masukkan Email: " emailbackup
+echo $emailbackup > /etc/emailbackup.txt
+wget -O /usr/bin/autobkvps "https://raw.githubusercontent.com/kancah/kenyang/main/viaemail/codingan" >/dev/null 2>&1
+chmod +x /usr/bin/autobkvps
+cat >/etc/cron.d/autobackupvps <<-END
+	SHELL=/bin/sh
+	PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+	59 23 * * * root /usr/bin/autobkvps
+END
+clear
+echo -e " ┌─────────────────────────────────────────────────────────┐"
+echo -e "─│                        ${BLUE}WELCOME TO${NC}                       │─"
+echo -e "─│    ${YELLOW}┌─┐┬ ┬┌┬┐┌─┐┌─┐┌─┐┬─┐┬┌─┐┌┬┐  ┌─┐┬─┐┌─┐┌┬┐┬┬ ┬┌┬┐${NC}    │─"
+echo -e "─│    ${YELLOW}├─┤│ │ │ │ │└─┐│  ├┬┘│├─┘ │   ├─┘├┬┘├┤ │││││ ││││${NC}    │─"
+echo -e "─│    ${YELLOW}┴ ┴└─┘ ┴ └─┘└─┘└─┘┴└─┴┴   ┴   ┴  ┴└─└─┘┴ ┴┴└─┘┴ ┴${NC}    │─"
+echo -e "─│        ${RED}POWERRED BY ALFVPN${NC} | ${Green}TELEGRAM: @Mass_Alfin${NC}       │─"
+echo -e " └─────────────────────────────────────────────────────────┘"
+echo -e " ┌─────────────────────────────────────────────────────────┐"
+echo -e " │SELAMAT VPS ANDA AKAN OTOMATIS DIBACKUP PADA JAM 23:59 PM│"
+echo -e " │    DETAIL BACKUP AKAN DIKIRIMKAN VIA AKUN GMAIL ANDA    │"
+echo -e " │    GUNAKAN TOKEN-ID APABILA INGIN MERESTORE VPS ANDA    │"
+echo -e " └─────────────────────────────────────────────────────────┘"
+read -n 1 -s -r -p "Press any key to back on menu"
+menu
